@@ -2,25 +2,29 @@
 
 spm is Simple-Package-Manager
 
+Implements package manager at JavaScript (Node.js).<br>
 
+This is created to learn JavaScript (Node.js) and Package Manager.
 
-Implements package manager at JavaScript.<br>
+## Command
 
-This is created to learn JavaScript and Package Manager.
+Test Run
 
-## Usage
+```bash
+npm run test
+```
 
-TODO
+Code format
 
-
+```bash
+npm run fmt
+```
 
 ## Architecture of package management
 
-Package management uses this ``spm-package.json`` .
+Package management uses this `spm-package.json` .
 
-Installed library is stored to ``spm_node_modules/``.
-
-
+Installed library is stored to `spm_node_modules/`.
 
 It has almost the same structure as [npm](https://github.com/npm/npm) and [yarn](https://github.com/yarnpkg/yarn)
 

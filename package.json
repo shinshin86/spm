@@ -1,0 +1,22 @@
+{
+  "scripts": {
+    "dev": "node index.js",
+    "test": "./test.sh",
+    "fmt": "prettier --write '**/*.{js,json,md}'"
+  },
+  "dependencies": {
+    "fs-extra": "^9.0.1",
+    "gunzip-maybe": "^1.4.2",
+    "node-fetch": "^2.6.0",
+    "progress": "^2.0.3",
+    "semver": "^7.3.2",
+    "tar-fs": "^2.1.0",
+    "tar-stream": "^2.1.2"
+  },
+  "devDependencies": {
+    "prettier": "^2.0.5"
+  },
+  "prettier": {
+    "singleQuote": true
+  }
+}
