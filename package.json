@@ -1,7 +1,7 @@
 {
   "scripts": {
     "dev": "node index.js",
-    "test": "./test.sh",
+    "test": "jest index.test.js",
     "fmt": "prettier --write '**/*.{js,json,md}'"
   },
   "dependencies": {
@@ -14,6 +14,7 @@
     "tar-stream": "^2.1.2"
   },
   "devDependencies": {
+    "jest": "^26.1.0",
     "prettier": "^2.0.5"
   },
   "prettier": {
