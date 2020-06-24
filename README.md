@@ -1,4 +1,4 @@
-# spm
+# spm [![Build Status](https://travis-ci.org/shinshin86/spm.svg?branch=master)](https://travis-ci.org/shinshin86/spm)
 
 spm is Simple-Package-Manager
 
