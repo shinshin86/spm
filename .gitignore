@@ -63,3 +63,5 @@ typings/
 # spm modules
 spm-package.json
 spm_node_modules/
+
+dist/

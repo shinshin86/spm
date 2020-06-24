@@ -1,8 +1,13 @@
 {
+  "main": "dist/index.js",
   "scripts": {
-    "dev": "node index.js",
+    "start": "node .",
+    "dev": "ts-node src/index.ts",
     "test": "jest index.test.js",
-    "fmt": "prettier --write '**/*.{js,json,md}'"
+    "fmt": "prettier --write '**/*.{js,ts,json,md}'",
+    "clean": "rimraf dist/*",
+    "tsc": "tsc",
+    "build": "npm-run-all clean tsc"
   },
   "dependencies": {
     "fs-extra": "^9.0.1",
@@ -14,8 +19,13 @@
     "tar-stream": "^2.1.2"
   },
   "devDependencies": {
+    "@types/node": "^14.0.14",
     "jest": "^26.1.0",
-    "prettier": "^2.0.5"
+    "npm-run-all": "^4.1.5",
+    "prettier": "^2.0.5",
+    "rimraf": "^3.0.2",
+    "ts-node": "^8.10.2",
+    "typescript": "^3.9.5"
   },
   "prettier": {
     "singleQuote": true
