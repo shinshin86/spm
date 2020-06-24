@@ -1,3 +1,4 @@
+export {};
 const fetch = require('node-fetch');
 const semver = require('semver');
 const fs = require('fs-extra');
@@ -11,10 +12,10 @@ const path = require('path');
 
 const exec = util.promisify(cp.exec);
 
-function getFileName(entryName, virtualPath) {
-  parsedEntryName = entryName.replace(/^\/+/, '');
+function getFileName(entryName: string, virtualPath: number): string | null {
+  const parsedEntryName: string = entryName.replace(/^\/+/, '');
 
-  for (let t = 0; t < virtualPath; ++t) {
+  for (let t: number = 0; t < virtualPath; ++t) {
     const index = entryName.indexOf('/');
 
     if (index === -1) {
@@ -27,19 +28,23 @@ function getFileName(entryName, virtualPath) {
   return entryName;
 }
 
-async function readFileFromArchive(fileName, buffer, { virtualPath = 0 } = {}) {
+async function readFileFromArchive(
+  fileName: string,
+  buffer: string,
+  { virtualPath = 0 } = {}
+) {
   return new Promise((resolve, reject) => {
     const extractor = tar.extract();
 
-    extractor.on('entry', (header, stream, next) => {
+    extractor.on('entry', (header: any, stream: any, next: any): any => {
       if (getFileName(header.name, virtualPath) === fileName) {
-        const buffers = [];
+        const buffers: Array<any> = [];
 
-        stream.on('data', (data) => {
+        stream.on('data', (data: any) => {
           buffers.push(data);
         });
 
-        stream.on('error', (error) => {
+        stream.on('error', (error: any) => {
           reject(error);
         });
 
@@ -55,7 +60,7 @@ async function readFileFromArchive(fileName, buffer, { virtualPath = 0 } = {}) {
       stream.resume();
     });
 
-    extractor.on('error', (error) => {
+    extractor.on('error', (error: any) => {
       reject(error);
     });
 
@@ -66,7 +71,7 @@ async function readFileFromArchive(fileName, buffer, { virtualPath = 0 } = {}) {
     const gunzipper = gunzipMaybe();
     gunzipper.pipe(extractor);
 
-    gunzipper.on('error', (error) => {
+    gunzipper.on('error', (error: any) => {
       reject(error);
     });
 
@@ -75,19 +80,19 @@ async function readFileFromArchive(fileName, buffer, { virtualPath = 0 } = {}) {
   });
 }
 
-async function readPackageJsonFromArchive(packageBuffer) {
+async function readPackageJsonFromArchive(packageBuffer: any): Promise<any> {
   return await readFileFromArchive('package.json', packageBuffer, {
     virtualPath: 1,
   });
 }
 
 async function extractArchiveTo(
-  packageBuffer,
-  target,
+  packageBuffer: any,
+  target: any,
   { virtualPath = 0 } = {}
 ) {
   return new Promise((resolve, reject) => {
-    function map(header) {
+    function map(header: any) {
       header.name = getFileName(header.name, virtualPath);
       return header;
     }
@@ -97,7 +102,7 @@ async function extractArchiveTo(
     const extractor = tarFs.extract(target, { map });
     gunzipper.pipe(extractor);
 
-    extractor.on('error', (error) => {
+    extractor.on('error', (error: any) => {
       reject(error);
     });
 
@@ -110,11 +115,11 @@ async function extractArchiveTo(
   });
 }
 
-async function extractNpmArchiveTo(packageBuffer, target) {
+async function extractNpmArchiveTo(packageBuffer: any, target: any) {
   return await extractArchiveTo(packageBuffer, target, { virtualPath: 1 });
 }
 
-async function trackProgress(cb) {
+async function trackProgress(cb: any): Promise<any> {
   const pace = new Progress(':bar :current/:total :percent (:elapseds)', {
     width: 80,
     total: 1,
@@ -130,7 +135,11 @@ async function trackProgress(cb) {
   }
 }
 
-async function linkPackages(pace, { name, reference, dependencies }, cwd) {
+async function linkPackages(
+  pace: any,
+  { name, reference, dependencies }: any,
+  cwd: any
+): Promise<any> {
   pace.total += 1;
 
   await getPackageDependencyTree(pace, {
@@ -141,51 +150,57 @@ async function linkPackages(pace, { name, reference, dependencies }, cwd) {
 
   // is not root
   if (reference) {
-    const packageBuffer = await fetchPackage({ name, reference });
+    const packageBuffer: any = await fetchPackage({ name, reference });
     await extractNpmArchiveTo(packageBuffer, cwd);
   }
 
   await Promise.all(
-    dependencies.map(async ({ name, reference, dependencies }) => {
-      const target = `${cwd}/spm_node_modules/${name}`;
-      const binTarget = `${cwd}/spm_node_modules/.bin`;
+    dependencies.map(
+      async ({ name, reference, dependencies }: any): Promise<any> => {
+        const target = `${cwd}/spm_node_modules/${name}`;
+        const binTarget = `${cwd}/spm_node_modules/.bin`;
 
-      await linkPackages(pace, { name, reference, dependencies }, target);
+        await linkPackages(pace, { name, reference, dependencies }, target);
 
-      const dependencyPackageJson = require(`${target}/package.json`);
+        const dependencyPackageJson = require(`${target}/package.json`);
 
-      const bin = dependencyPackageJson.bin || {};
-      for (const binName of Object.keys(bin)) {
-        const source = path.resolve(target, bin[binName]);
-        const dest = `${binTarget}/${binName}`;
+        const bin = dependencyPackageJson.bin || {};
+        for (const binName of Object.keys(bin)) {
+          const source = path.resolve(target, bin[binName]);
+          const dest = `${binTarget}/${binName}`;
 
-        console.log(`bin: ${dest}`);
+          console.log(`bin: ${dest}`);
 
-        await fs.mkdirp(`${cwd}/spm_node_modules/.bin`);
-        await fs.symlink(relative(binTarget, source), dest);
-      }
+          await fs.mkdirp(`${cwd}/spm_node_modules/.bin`);
+          await fs.symlink(path.relative(binTarget, source), dest);
+        }
 
-      if (dependencyPackageJson.scripts) {
-        for (const scriptName of ['preinstall', 'install', 'postinstall']) {
-          const script = dependencyPackageJson.scripts[scriptName];
+        if (dependencyPackageJson.scripts) {
+          for (const scriptName of ['preinstall', 'install', 'postinstall']) {
+            const script: any = dependencyPackageJson.scripts[scriptName];
 
-          if (!script) continue;
+            if (!script) continue;
 
-          await exec(script, {
-            cwd: target,
-            env: Object.assign({}, process.env, {
-              PATH: `${target}/spm_node_modules/.bin:${process.env.PATH}`,
-            }),
-          });
+            await exec(script, {
+              cwd: target,
+              env: Object.assign({}, process.env, {
+                PATH: `${target}/spm_node_modules/.bin:${process.env.PATH}`,
+              }),
+            });
+          }
         }
       }
-    })
+    )
   );
   pace.tick();
 }
 
-const isVolatileDependency = (volatileDependency, available) => {
-  const availableReference = available.get(volatileDependency.name);
+const isVolatileDependency = (
+  volatileDependency: any,
+  available: any
+): boolean => {
+  const availableReference: any = available.get(volatileDependency.name);
+
   if (availableReference === volatileDependency.reference) {
     return false;
   }
@@ -202,15 +217,15 @@ const isVolatileDependency = (volatileDependency, available) => {
 };
 
 async function getPackageDependencyTree(
-  pace,
-  { name, reference, dependencies },
+  pace: any,
+  { name, reference, dependencies }: any,
   available = new Map()
-) {
+): Promise<any> {
   const promiseDependenciesList = dependencies
-    .filter((volatileDependency) =>
+    .filter((volatileDependency: any) =>
       isVolatileDependency(volatileDependency, available)
     )
-    .map(async (volatileDependency) => {
+    .map(async (volatileDependency: any) => {
       pace.total += 1;
 
       const pinnedDependency = await getPinnedReference(volatileDependency);
@@ -237,9 +252,9 @@ async function getPackageDependencyTree(
   };
 }
 
-async function getPackageDependencies({ name, reference }) {
-  const packageBuffer = await fetchPackage({ name, reference });
-  const packageJson = JSON.parse(
+async function getPackageDependencies({ name, reference }: any): Promise<any> {
+  const packageBuffer: string = await fetchPackage({ name, reference });
+  const packageJson: any = JSON.parse(
     await readPackageJsonFromArchive(packageBuffer)
   );
 
@@ -251,7 +266,7 @@ async function getPackageDependencies({ name, reference }) {
   }));
 }
 
-async function fetchPackage({ name, reference }) {
+async function fetchPackage({ name, reference }: any): Promise<any> {
   if (['/', './', '../'].some((prefix) => reference.startsWith(prefix))) {
     return await fs.readFile(reference);
   }
@@ -263,7 +278,7 @@ async function fetchPackage({ name, reference }) {
     });
   }
 
-  const response = await fetch(reference);
+  const response: any = await fetch(reference);
 
   if (!response.ok) {
     throw new Error(`Couldn't fetch package "${reference}"`);
@@ -272,7 +287,7 @@ async function fetchPackage({ name, reference }) {
   return await response.buffer();
 }
 
-async function getPinnedReference({ name, reference }) {
+async function getPinnedReference({ name, reference }: any): Promise<any> {
   if (semver.validRange(reference) && !semver.valid(reference)) {
     const response = await fetch(`https://registry.yarnpkg.com/${name}`);
     const info = await response.json();
@@ -291,15 +306,15 @@ async function getPinnedReference({ name, reference }) {
   return { name, reference };
 }
 
-function optimizePackageTree({ name, reference, dependencies }) {
-  dependencies = dependencies.map((dependency) =>
+function optimizePackageTree({ name, reference, dependencies }: any): any {
+  dependencies = dependencies.map((dependency: any) =>
     optimizePackageTree(dependency)
   );
 
   for (const hardDependency of dependencies.slice()) {
     for (const subDependency of hardDependency.dependencies.slice()) {
       const availableDependency = dependencies.find(
-        (dependency) => dependency.name === subDependency.name
+        (dependency: any) => dependency.name === subDependency.name
       );
 
       // If not availableDependency
@@ -313,7 +328,7 @@ function optimizePackageTree({ name, reference, dependencies }) {
       ) {
         hardDependency.dependencies.splice(
           hardDependency.dependencies.findIndex(
-            (dependency) => dependency.name === subDependency.name
+            (dependency: any) => dependency.name === subDependency.name
           )
         );
       }
@@ -323,26 +338,29 @@ function optimizePackageTree({ name, reference, dependencies }) {
 }
 
 (async () => {
-  const cwd = process.argv[2] || process.cwd();
-  const spmJsonPath = path.resolve(cwd, 'spm-package.json'); // TODO: error handling
-  const packageJson = require(spmJsonPath);
+  const cwd: string = process.argv[2] || process.cwd();
+  const spmJsonPath: string = path.resolve(cwd, 'spm-package.json'); // TODO: error handling
+  const packageJson: any = require(spmJsonPath);
 
-  const destPath = path.resolve(process.argv[3] || cwd);
+  const destPath: string = path.resolve(process.argv[3] || cwd);
 
-  packageJson.dependencies = Object.keys(
-    packageJson.dependencies || {}
-  ).map((name) => ({ name, reference: packageJson.dependencies[name] }));
+  packageJson.dependencies = Object.keys(packageJson.dependencies || {}).map(
+    (name: string): any => ({
+      name,
+      reference: packageJson.dependencies[name],
+    })
+  );
 
   try {
     console.log('Resolving the package tree...');
 
-    const packageTree = await trackProgress((pace) =>
+    const packageTree: any = await trackProgress((pace: any) =>
       getPackageDependencyTree(pace, packageJson)
     );
 
     console.log('Linking the packages on the filesystem...');
 
-    await trackProgress((pace) =>
+    await trackProgress((pace: any) =>
       linkPackages(pace, optimizePackageTree(packageTree), destPath)
     );
   } catch (error) {
