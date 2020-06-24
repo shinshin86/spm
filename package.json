@@ -3,7 +3,7 @@
   "scripts": {
     "start": "node .",
     "dev": "ts-node src/index.ts",
-    "test": "jest index.test.js",
+    "test": "rimraf spm_node_modules/* && npm run build && jest test/index.test.js",
     "fmt": "prettier --write '**/*.{js,ts,json,md}'",
     "clean": "rimraf dist/*",
     "tsc": "tsc",
