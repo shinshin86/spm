@@ -2,8 +2,8 @@ language: node_js
 node_js:
   - "12"
 
-before_install:
-  - npm install jest
+install:
+  - npm install
 
 script:
   - npm run test
