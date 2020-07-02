@@ -10,6 +10,10 @@
     "build": "npm-run-all clean tsc"
   },
   "dependencies": {
+    "@types/gunzip-maybe": "^1.4.0",
+    "@types/node-fetch": "^2.5.7",
+    "@types/progress": "^2.0.3",
+    "@types/tar-fs": "^2.0.0",
     "fs-extra": "^9.0.1",
     "gunzip-maybe": "^1.4.2",
     "node-fetch": "^2.6.0",
