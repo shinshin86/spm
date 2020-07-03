@@ -1,6 +1,7 @@
 {
   "name": "spm",
   "dependencies": {
-    "tar-stream": "*"
+    "tar-stream": "*",
+    "react": "^16.13.1"
   }
 }

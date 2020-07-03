@@ -186,9 +186,12 @@ async function linkPackages(
           const source = path.resolve(target, bin[binName]);
           const dest = `${binTarget}/${binName}`;
 
-          console.log(`bin: ${dest}`);
-
           await fs.mkdirp(`${cwd}/spm_node_modules/.bin`);
+
+          if (fs.existsSync(dest)) {
+            fs.unlinkSync(dest);
+          }
+
           await fs.symlink(path.relative(binTarget, source), dest);
         }
 
