@@ -16,7 +16,7 @@
     "@types/tar-fs": "^2.0.0",
     "fs-extra": "^9.0.1",
     "gunzip-maybe": "^1.4.2",
-    "node-fetch": "^2.6.1",
+    "node-fetch": "^2.6.7",
     "progress": "^2.0.3",
     "semver": "^7.3.2",
     "tar-fs": "^2.1.0",
