@@ -18,7 +18,7 @@
     "gunzip-maybe": "^1.4.2",
     "node-fetch": "^2.6.7",
     "progress": "^2.0.3",
-    "semver": "^7.3.2",
+    "semver": "^7.5.2",
     "tar-fs": "^2.1.0",
     "tar-stream": "^2.1.2"
   },
